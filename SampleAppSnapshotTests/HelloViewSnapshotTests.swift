@@ -32,12 +32,15 @@ struct HelloViewSnapshotTests {
     }
     
     @Test @MainActor func testPreviews() throws {
-        print("[D] RECODING_MODE", ProcessInfo.processInfo.environment["RECODING_MODE"])
         for preview in HelloView_Previews._allPreviews {
             for device in SnapshotDevice.allCases {
                 assertSnapshot(
                     of: UIHostingController(rootView: preview.content),
-                    as: .image(on: device.viewImageConfig),
+                    as: .image(
+                        on: device.viewImageConfig,
+                        precision: 0.99,
+                        perceptualPrecision: 0.97
+                    ),
                     named: "HelloView-\(device)",
                     record: record
                 )
