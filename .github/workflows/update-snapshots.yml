@@ -1,0 +1,42 @@
+name: update-snapshots
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    timeout-minutes: 30
+    runs-on: macos-14
+    name: Update Snapshots
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.1-beta'
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: maiyama18/SnapshotTestingSampleAppSnapshots
+          path: SnapshotTestingSampleAppSnapshots
+          token: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Update Snapshots
+        continue-on-error: true
+        run: |
+          xcodebuild -scheme SampleApp -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 15,OS=18.1" RECORDING_MODE=ON test
+      - name: Copy Snapshots
+        run: |
+          cp -r SampleAppSnapshotTests/__Snapshots__/* SnapshotTestingSampleAppSnapshots/
+      - name: Commit Snapshot Updates
+        run: |
+          cd SnapshotTestingSampleAppSnapshots
+          git switch -c snapshots/"$GITHUB_REF_NAME"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add .
+          git commit -m "Snapshot"
+          git push origin snapshots/"$GITHUB_REF_NAME" --force-with-lease
+      - name: Create PR
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          cd SnapshotTestingSampleAppSnapshots
+          gh pr create --title "Update Snapshots" --body "Update Snapshots" --base main --head snapshots/"$GITHUB_REF_NAME"
+

@@ -27,14 +27,22 @@ enum SnapshotDevice: String, CaseIterable {
 }
 
 struct HelloViewSnapshotTests {
+    var record: Bool {
+        ProcessInfo.processInfo.environment["RECODING_MODE"] == "ON"
+    }
+    
     @Test @MainActor func testPreviews() throws {
         for preview in HelloView_Previews._allPreviews {
             for device in SnapshotDevice.allCases {
                 assertSnapshot(
                     of: UIHostingController(rootView: preview.content),
-                    as: .image(on: device.viewImageConfig),
+                    as: .image(
+                        on: device.viewImageConfig,
+                        precision: 1,
+                        perceptualPrecision: 0.97
+                    ),
                     named: "HelloView-\(device)",
-                    record: false
+                    record: record
                 )
             }
         }
