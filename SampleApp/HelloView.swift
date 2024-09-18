@@ -13,10 +13,11 @@ struct HelloView: View {
         VStack {
             Image(systemName: "globe")
                 .imageScale(.large)
-                .foregroundStyle(.tint)
+                .foregroundStyle(.orange)
             Text("Hello, world!")
         }
         .padding()
+        .font(.largeTitle)
     }
 }
 
