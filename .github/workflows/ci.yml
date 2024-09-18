@@ -13,6 +13,15 @@ jobs:
         with:
           xcode-version: '16.1-beta'
       - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: maiyama18/SnapshotTestingSampleAppSnapshots
+          path: SnapshotTestingSampleAppSnapshots
+          token: ${{ secrets.PERSONAL_TOKEN }}
+      - name: Copy Snapshots
+        run: |
+          mkdir -p SnapshotTestingSampleAppTests/__Snapshots__
+          cp -r SnapshotTestingSampleAppSnapshots/* SnapshotTestingSampleAppTests/__Snapshots__/
       - name: Test
         run: |
           xcodebuild -scheme SampleApp -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 15,OS=18.1" test
