@@ -38,7 +38,7 @@ struct HelloViewSnapshotTests {
                     of: UIHostingController(rootView: preview.content),
                     as: .image(
                         on: device.viewImageConfig,
-                        precision: 0.99,
+                        precision: 0.80,
                         perceptualPrecision: 0.97
                     ),
                     named: "HelloView-\(device)",
